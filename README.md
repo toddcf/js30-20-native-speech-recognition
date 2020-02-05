@@ -1,1 +1,3 @@
-# js30-20-native-speech-recognition
+# JavaScript 30 #20: Native Speech Recognition
+
+Practicing speech recognition. (Global variable in the browser.)
