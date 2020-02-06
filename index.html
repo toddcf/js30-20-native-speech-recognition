@@ -10,8 +10,62 @@
   </div>
 
 <script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+  // NOTE: THIS APPLICATION MUST RUN THROUGH A SERVER. INSTALL NPM AND RUN "NPM START" IF YOU DON'T HAVE A SERVER.
+
+  const speechRecognizer = {
+    // Create new paragraph for gaps in speech:
+    p: document.createElement('p'),
+    words: document.querySelector('.words'),
+    addParagraph: () => {
+      // Add each paragraph to .words:
+      speechRecognizer.words.appendChild(speechRecognizer.p);
+    },
+    init: () => {
+      // webkit is for Chrome:
+      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      const recognition = new SpeechRecognition();
+
+      // Populate as user speaks instead of waiting for them to stop:
+      recognition.interimResults = true;
+
+      // Listen for speech:
+      recognition.addEventListener('result', e => {
+        // Get the speech results, then join the strings together:
+        const transcript = Array.from(e.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+
+        // Add the results to a <p>:
+        speechRecognizer.p.textContent = transcript;
+
+        // Add new <p> instead of replacing the existing one:
+        if(e.results[0].isFinal) {
+          // Overwrite the existing <p>:
+          speechRecognizer.p = document.createElement('p');
+          speechRecognizer.addParagraph();
+        }
+
+        // Can add customizations for specific phrases:
+        if(transcript.includes('get the weather')) {
+          console.log('Getting the weather . . .');
+          // Can use this to trigger other functions, etc.
+        }
+
+        console.log(transcript);
+      });
+
+      // Must restart after each speech block ends:
+      recognition.addEventListener('end', recognition.start);
+
+      // Prompt user before running:
+      recognition.start();
+    }
+  }
+
+  speechRecognizer.init();
 
 </script>
 
